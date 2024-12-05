@@ -11,4 +11,5 @@ CMD [ "python", "./wgroutemgr.py" ]
 
 # docker run -it --rm --name wgroutemgr --privileged -v "$PWD":/usr/src/wgroutemgr -w /usr/src/wgroutemgr wgroutemgr python wgroutemgr.py
 
-# docker run -it --rm --privileged --name wgroutemgr -v "$PWD":/usr/src/wgroutemgr -v /var/run/docker.sock:/var/run/docker.sock  -w /usr/src/wgroutemgr wgroutemgr python wgroutemgr.py
+# slave mount does not work on MacOS, making this unusable
+# docker run -it --rm --privileged --name wgroutemgr -v "$PWD":/usr/src/wgroutemgr -v /var/run/docker.sock:/var/run/docker.sock  -v /var/run/docker/netns:/var/run/docker/netns:ro,slave -w /usr/src/wgroutemgr wgroutemgr python wgroutemgr.py

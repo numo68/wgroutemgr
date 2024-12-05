@@ -39,14 +39,21 @@ def on_died(id):
 def handle_routing(c, networks, nskey):
     logging.info("Setting routing for container {}, networks {}".format(c.name, networks))
     processed[c.id] = c.name
+    fd = os.open(nskey, os.O_RDONLY)
+    os.setns(fd, os.CLONE_NEWNET)
+    os.close(fd)
 
 def main_loop():
     own_id = get_own_container_id()
-    print(own_id)
 
     start_time = datetime.now()
 
     client = docker.from_env()
+    host = client.info()['OperatingSystem']
+
+    if 'Docker Desktop' in host:
+        logging.error("{} does not support bind propagation, exiting".format(host))
+        sys.exit(1)
 
     containers = client.containers.list()
 
@@ -71,14 +78,16 @@ def main_loop():
 
     logging.info("Stopping")
 
-if sys.version_info < MIN_PYTHON:
-    sys.exit("Python %s.%s or later is required.\n" % MIN_PYTHON)
-
-if os.uname().sysname != 'Linux':
-    sys.exit("Linux OS is required.\n")
-
 logging.basicConfig(level = logging.INFO)
 logging.info("Starting")
+
+if sys.version_info < MIN_PYTHON:
+    logging.error("Python %s.%s or later is required." % MIN_PYTHON)
+    sys.exit(1)
+
+if os.uname().sysname != 'Linux':
+    logging.error("Linux OS is required, is {}, exiting.".format(os.uname().sysname))
+    sys.exit(1)
 
 try:
     main_loop()
@@ -86,7 +95,3 @@ except Exception as ex:
     logging.error(ex)
 except KeyboardInterrupt:
     logging.info("Exiting on keyboard interrupt")
-
-# fd = os.open("/proc/1/ns/net", os.O_RDONLY)
-# os.setns(fd, os.CLONE_NEWNET)
-# os.close(fd)
