@@ -9,7 +9,8 @@ COPY ./wgroutemgr.py .
 
 CMD [ "python", "./wgroutemgr.py" ]
 
-# docker run -it --rm --name wgroutemgr --privileged -v "$PWD":/usr/src/wgroutemgr -w /usr/src/wgroutemgr wgroutemgr python wgroutemgr.py
-
 # slave mount does not work on MacOS, making this unusable
-# docker run -it --rm --privileged --name wgroutemgr -v "$PWD":/usr/src/wgroutemgr -v /var/run/docker.sock:/var/run/docker.sock  -v /var/run/docker/netns:/var/run/docker/netns:ro,slave -w /usr/src/wgroutemgr wgroutemgr python wgroutemgr.py
+
+# docker run -it --rm --privileged --name wgroutemgr -v "$PWD":/usr/src/wgroutemgr -v /var/run/docker.sock:/var/run/docker.sock  -v /var/run/docker/netns:/var/run/docker/netns:ro,slave --network container:wireguard-wireguard-1 -l wgroutemgr.network=wg-net -w /usr/src/wgroutemgr wgroutemgr python wgroutemgr.py
+
+# docker run -it --rm -l wgroutemgr.networks=1.2.3.0/24,1.1.4.5 alpine
