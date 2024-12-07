@@ -119,8 +119,9 @@ routemgr-1   | INFO:root:Setting route to 192.168.66.0/24 via 192.168.67.129
 ## Caveats
 
 The docker infrastructure has no documented way to introspect the own container from within.
-Most of the solutions found on the internet are not foolproof; either they expect cgroups v1,
-or fail if the container uses another container's networking, or have other gotchas.
+Most of the solutions found on the internet are not foolproof; either they expect specific
+cgroups version, or fail if the container uses another container's networking, or have other
+gotchas.
 
 The `wgroutemgr` uses undocumented functionality to determine
 - the own container identifier (to read the labels)

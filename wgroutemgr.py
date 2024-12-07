@@ -92,6 +92,8 @@ class WGRouteManager:
 
         Example:
         0::/system.slice/docker-40bca618699cc2400869a366399a4495c9849d3c0f756fedf198a5b60bd9830d.scope
+        or
+        9:name=systemd:/docker/97c6dd6f66238ddf2cd0e94d01f780f651d89a5fbf721ce15fcf9cdc0c754774
 
         For the implement method to work the container needs to be created with
         --cgroupns host.
@@ -109,11 +111,17 @@ class WGRouteManager:
                 if "/system.slice/" in line:
                     container_id = line.split("/docker-")[
                         -1
-                    ]  # Take only text to the right
+                    ]
                     container_id = container_id.split(".scope")[
                         0
-                    ]  # Take only text to the left
+                    ]
                     break
+                if "systemd:/docker/" in line:
+                    container_id = line.split("/docker/")[
+                        -1
+                    ]
+                    break
+
                 line = file.readline().strip()
 
         if not container_id:
