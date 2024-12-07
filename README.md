@@ -33,7 +33,7 @@ The typical situation is described in the following picture
                       -------------                  -------------
 ```
 
-The wireguard containers can easily communicate with each other and their on their
+The wireguard containers can easily communicate with each other and on their
 respective wg-net networks. For the Cont1 to reach Cont2 it however has to know that
 192.168.67.0/24 is reachable through 192.168.66.129.
 
