@@ -56,9 +56,9 @@ class WGRouteManager:
             self.wg_net_ipaddr = self.client.api.inspect_container(
                 self.network_container.id
             )["NetworkSettings"]["Networks"][self.wg_net]["IPAddress"]
-            logging.info("Address of %s is %s", self.wg_net, self.wg_net_ipaddr)
+            logging.info("Address on %s is %s", self.wg_net, self.wg_net_ipaddr)
         except Exception as ex:
-            raise RuntimeError(f"Cannot get IP address of {self.wg_net}") from ex
+            raise RuntimeError(f"Cannot get IP address on the {self.wg_net} network") from ex
 
     def check_env(self):
         """Check the prerequisites
