@@ -19,7 +19,7 @@ the containers and automatically routes those networks through the gateway.
 The typical situation is described in the following picture
 
 ```
- 192.168.66.9        192.168.66.129                  192.168.67.129         192.168.67.144
+ 192.168.66.9        192.168.66.129                  192.168.67.129       192.168.67.144
    ---------          -------------                  -------------          ---------
   |         | wg-net |             |                |             | wg-net |         |
   |  Cont1  |--------|  wireguard  |=== Internet ===|  wireguard  |--------|  Cont2  |
@@ -35,7 +35,7 @@ The typical situation is described in the following picture
 
 The wireguard containers can easily communicate with each other and their on their
 respective wg-net networks. For the Cont1 to reach Cont2 it however has to know that
-192.168.67.0/24 is reachable through 192.168.66.1.
+192.168.67.0/24 is reachable through 192.168.66.129.
 
 ## Parametrization
 
@@ -52,6 +52,9 @@ acquire autimatically.
 `wgroutemgr.networks` : A comma-separated list of networks in the CIDR notation to route through the gateway.
 
 ## Example
+
+A dovecot running on a 192.168.67.0/24 network needs to be reachable through a traefik proxy coming from 192.168.66.0/24
+behind a wireguard tunnel.
 
 ### Wireguard
 
@@ -91,7 +94,6 @@ services:
     labels:
       - "wgroutemgr.networks=192.168.66.0/24"
     networks:
-      reverse-proxy:
       wg-net:
         ipv4_address: "192.168.67.144"
     restart: unless-stopped
@@ -99,9 +101,6 @@ services:
 ...
 
 networks:
-  reverse-proxy:
-    name: reverse-proxy
-    external: true
   wg-net:
     name: wg-net
     external: true
@@ -121,7 +120,7 @@ routemgr-1   | INFO:root:Setting route to 192.168.66.0/24 via 192.168.67.129
 
 The docker infrastructure has no documented way to introspect the own container from within.
 Most of the solutions found on the internet are not foolproof; either they expect cgroups v1,
-or fail if the container uses another container's networking.
+or fail if the container uses another container's networking, or have other gotchas.
 
 The `wgroutemgr` uses undocumented functionality to determine
 - the own container identifier (to read the labels)
@@ -140,3 +139,6 @@ At the moment the following prerequisites have to be met
 - docker socket needs to be mounted
 - docker namespace directory must be mounted as a slave mount
 
+## Source
+
+https://github.com/numo68/wgroutemgr
