@@ -58,7 +58,9 @@ class WGRouteManager:
             )["NetworkSettings"]["Networks"][self.wg_net]["IPAddress"]
             logging.info("Address on %s is %s", self.wg_net, self.wg_net_ipaddr)
         except Exception as ex:
-            raise RuntimeError(f"Cannot get IP address on the {self.wg_net} network") from ex
+            raise RuntimeError(
+                f"Cannot get IP address on the {self.wg_net} network"
+            ) from ex
 
     def check_env(self):
         """Check the prerequisites
@@ -91,7 +93,7 @@ class WGRouteManager:
         or monitor events to ur container.
 
         Example:
-        0::/system.slice/docker-40bca618699cc2400869a366399a4495c9849d3c0f756fedf198a5b60bd9830d.scope
+        0::/system.slice/docker-40bca618699cc2400869a366399a4495c9849d3c0f756fedf198a5b60bd9830d.scope   # pylint: disable=line-too-long
         or
         9:name=systemd:/docker/97c6dd6f66238ddf2cd0e94d01f780f651d89a5fbf721ce15fcf9cdc0c754774
 
@@ -109,17 +111,11 @@ class WGRouteManager:
             line = file.readline().strip()
             while line:
                 if "/system.slice/" in line:
-                    container_id = line.split("/docker-")[
-                        -1
-                    ]
-                    container_id = container_id.split(".scope")[
-                        0
-                    ]
+                    container_id = line.split("/docker-")[-1]
+                    container_id = container_id.split(".scope")[0]
                     break
                 if "systemd:/docker/" in line:
-                    container_id = line.split("/docker/")[
-                        -1
-                    ]
+                    container_id = line.split("/docker/")[-1]
                     break
 
                 line = file.readline().strip()
@@ -140,7 +136,7 @@ class WGRouteManager:
         expecting that the identifier is path of it.
 
         Example:
-        1356 1234 202:1 /var/lib/docker/containers/23d4e2c47957387137745467eaa48d76fb06c7a47a17424924f7ce82a6244da7/resolv.conf /etc/resolv.conf rw,relatime - ext4 /dev/xvda1 rw,errors=remount-ro
+        1356 1234 202:1 /var/lib/docker/containers/23d4e2c47957387137745467eaa48d76fb06c7a47a17424924f7ce82a6244da7/resolv.conf /etc/resolv.conf rw,relatime - ext4 /dev/xvda1 rw,errors=remount-ro    # pylint: disable=line-too-long
 
         Raises:
             RuntimeError: The network container could not be identified
@@ -185,7 +181,7 @@ class WGRouteManager:
                 member_networks = info["NetworkSettings"]["Networks"]
                 if nskey == "":
                     logging.warning(
-                        "Routing requested for %s but no network namespace. --network:container:... is not supported",
+                        "Routing requested for %s but no network namespace. --network:container:... is not supported",  # pylint: disable=line-too-long
                         c.name,
                     )
                 elif not self.wg_net in member_networks:
@@ -268,7 +264,7 @@ class WGRouteManager:
         for c in containers:
             try:
                 self.on_started(c.id)
-            except Exception as ex:
+            except Exception as ex:  # pylint: disable=broad-exception-caught
                 logging.error(ex)
 
         for e in self.client.api.events(since=start_time, decode=True):
@@ -281,7 +277,7 @@ class WGRouteManager:
                         self.on_died(cid)
                     elif e["Action"] == "kill" and cid == self.own_container.id:
                         break
-            except Exception as ex:
+            except Exception as ex:  # pylint: disable=broad-exception-caught
                 logging.error(ex)
 
         logging.info("Stopping")
@@ -297,7 +293,7 @@ try:
 except RuntimeError as ex:
     logging.error(ex)
     sys.exit(1)
-except Exception as ex:
+except Exception as ex:  # pylint: disable=broad-exception-caught
     logging.error(ex)
 except KeyboardInterrupt:
     logging.info("Exiting on keyboard interrupt")
